@@ -1,10 +1,3 @@
-let body = document.querySelector("body");
-let htmlTag = document.createElement("html");
-let bodyTag = document.createElement("body");
-let $innerContent = $(
-  "<p>[inner html, body tag] <br /> Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus velit tempora cupiditate alias itaque perferendis iure provident, numquam distinctio eum. Veniam vitae, maiores eum expedita minus enim alias natus vel. <br /> Nisi voluptate nulla officia. Delectus consectetur ipsa corporis doloremque dolorem repellendus saepe similique vitae voluptate velit nam voluptas non at impedit repudiandae repellat voluptatibus quibusdam esse, consequatur laudantium excepturi iste! <br /> Sequi quisquam, consequuntur excepturi dolore nihil corporis et consectetur error eius placeat iste! Suscipit quia incidunt soluta, aliquid ipsam dignissimos sit necessitatibus temporibus porro sunt nihil! Maxime hic in officiis!</p>"
-);
-
 // 하이라이트할 요소들 생성
 let $button1 = $('<button id="button1">button1</button>');
 let $button2 = $('<button id="button2">button2</button>');
@@ -32,23 +25,37 @@ let $tooltip = $(
   </div>`
 );
 
-// 생성한 vail, tooltip, button 태그 적절히 삽입
-// html, body 안에 html, body가 또 존재하도록 했음
-$(htmlTag).css("border", "1px solid black");
-$(bodyTag).append($button1);
-$(bodyTag).append($("<br />"));
-$(bodyTag).append($("<br /><span>asdfasdfasdfasdf</span>"));
-$(bodyTag).append($button2);
-$(bodyTag).append($innerContent);
-$(bodyTag).append($button3);
-$(bodyTag).append($("<br />"));
-$(bodyTag).append(
+// fosslight와 같이 html, body가 3번 겹치도록 구현 (시작)
+let body1 = document.querySelector("body");
+let html2 = document.createElement("html");
+let body2 = document.createElement("body");
+let html3 = document.createElement("html");
+let body3 = document.createElement("body");
+body2.setAttribute("id", "body_innermost");
+
+let $innerContent = $(
+  `<p>[innermost html, body tag]<br /> Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus velit tempora cupiditate alias itaque perferendis iure provident, numquam distinctio eum. Veniam vitae, maiores eum expedita minus enim alias natus vel. <br /> Nisi voluptate nulla officia. Delectus consectetur ipsa corporis doloremque dolorem repellendus saepe similique vitae voluptate velit nam voluptas non at impedit repudiandae repellat voluptatibus quibusdam esse, consequatur laudantium excepturi iste! <br /> Sequi quisquam, consequuntur excepturi dolore nihil corporis et consectetur error eius placeat iste! Suscipit quia incidunt soluta, aliquid ipsam dignissimos sit necessitatibus temporibus porro sunt nihil! Maxime hic in officiis!</p>`
+);
+
+$(html2).append(body2);
+$(body2).append(html3);
+$(html3).append(body3);
+$(body3).append($button1);
+$(body3).append($("<br />"));
+$(body3).append($("<br /><span>asdfasdfasdfasdf</span>"));
+$(body3).append($button2);
+$(body3).append($innerContent);
+$(body3).append($button3);
+$(body3).append($("<br />"));
+$(body3).append(
   $("<br /><span>qwerqwerqwerqerqwerqqwertyqwertyqwertyasdfasdfasdf</span>")
 );
-$(bodyTag).append($button4);
-$(bodyTag).append($tooltip);
-htmlTag.append(bodyTag);
-body.append(htmlTag);
+$(body3).append($button4);
+$(body3).append($tooltip);
+$(body1).append(html2);
+$("html").css("border", "1px solid red");
+$("body").css({ border: "1px solid blue", padding: "10px" });
+// (끝)
 
 // vail, tooltip 기본 style 설정
 const vails = [$vailUp, $vailDown, $vailLeft, $vailRight];
@@ -63,38 +70,44 @@ $tooltip.css({
   display: "none",
 });
 
-// html 태그 내에 vail, tooltip들 넣기
-$("html").append($vailUp);
-$("html").append($vailDown);
-$("html").append($vailLeft);
-$("html").append($vailRight);
-$("html").append($tooltip);
+// body 태그 내에 vail, tooltip들 넣기
+$("body").append($vailUp);
+$("body").append($vailDown);
+$("body").append($vailLeft);
+$("body").append($vailRight);
+$("body").append($tooltip);
 
 // 하이라이트할 부분 설정
 let elem_index = 0;
 let elem_highlight = array_highlights[elem_index];
 
 // "Project List" 버튼을 눌렀을 때
+// 튜토리얼을 처음부터 보여줌
 $("#btn_project_list").on("click", () => {
   elem_index = 0;
   elem_highlight = array_highlights[elem_index];
-  locate_and_show_vails();
-  locate_and_show_tooltip();
+  locate_vails();
+  show_vails();
+  locate_tooltip();
+  show_tooltip();
 });
 
+// 브라우저 창 크기를 바꿀 시
+// vail, tooltip의 위치 조절
 $(window).resize(() => {
-  locate_and_show_vails();
-  locate_and_show_tooltip();
+  locate_vails();
+  locate_tooltip();
 });
 
-$("#button_prev").on("click", handle_prev);
-$("#button_next").on("click", handle_next);
+// 튜토리얼 - 이전, 다음, 닫기 버튼을 눌렀을 때 적절히 처리
+$("#button_prev").on("click", handle_click_prev);
+$("#button_next").on("click", handle_click_next);
 $("#button_close_tooltip").on("click", hide_vails_and_tooltips);
 
 //////////////////////////////// FUNCTIONS ////////////////////////////////
 
 // 4개 vail 각각의 위치, 크기 설정
-function locate_and_show_vails() {
+function locate_vails() {
   let offset = elem_highlight.offset();
 
   $vailUp.css({
@@ -121,12 +134,15 @@ function locate_and_show_vails() {
     width: `calc(100% - ${offset.left + elem_highlight.outerWidth(true)}px)`,
     height: `${elem_highlight.outerHeight(true)}`,
   });
+}
 
-  // vail 모두 보이게 설정
+// vail 모두 보이게 설정
+function show_vails() {
   for (const vail of vails) vail.css("display", "block");
 }
 
-function locate_and_show_tooltip() {
+// tooltip의 위치를 적절히 설정
+function locate_tooltip() {
   if (!elem_highlight) return;
   let offset = elem_highlight.offset();
 
@@ -140,7 +156,6 @@ function locate_and_show_tooltip() {
   if (tooltip_left < 0) tooltip_left = offset.left;
 
   $tooltip.css({
-    display: "block",
     position: "absolute",
     top: `${offset.top + elem_highlight.outerHeight(true) + 10}px`,
     left: `${tooltip_left}px`,
@@ -153,6 +168,12 @@ function locate_and_show_tooltip() {
   });
 }
 
+// tooltip을 화면에 보이게 함
+function show_tooltip() {
+  $tooltip.css({ display: "block" });
+}
+
+// vail, tooltip을 모두 화면에 보이지 않게 함
 function hide_vails_and_tooltips() {
   $vailUp.css("display", "none");
   $vailDown.css("display", "none");
@@ -161,21 +182,27 @@ function hide_vails_and_tooltips() {
   $tooltip.css("display", "none");
 }
 
-function handle_prev() {
+// tooltip의 '이전' 클릭시 실행되는 함수
+function handle_click_prev() {
   if (elem_index === 0) return;
   elem_index -= 1;
   elem_highlight = array_highlights[elem_index];
-  locate_and_show_vails();
-  locate_and_show_tooltip();
+  locate_vails();
+  show_vails();
+  locate_tooltip();
+  show_tooltip();
 }
 
-function handle_next() {
+// tooltip의 '다음' 클릭시 실행되는 함수
+function handle_click_next() {
   if (elem_index === array_highlights.length - 1) {
     hide_vails_and_tooltips();
     return;
   }
   elem_index += 1;
   elem_highlight = array_highlights[elem_index];
-  locate_and_show_vails();
-  locate_and_show_tooltip();
+  locate_vails();
+  show_vails();
+  locate_tooltip();
+  show_tooltip();
 }
