@@ -68,6 +68,11 @@ const property_vail = {
 for (const vail of vails) vail.css(property_vail);
 $tooltip.css({
   display: "none",
+  background: "white",
+  padding: "10px",
+  border: "1px solid black",
+  "z-index": 110,
+  "border-radius": "10px",
 });
 
 // body 태그 내에 vail, tooltip들 넣기
@@ -160,11 +165,6 @@ function locate_tooltip() {
     top: `${offset.top + elem_highlight.outerHeight(true) + 10}px`,
     left: `${tooltip_left}px`,
     width: `${tooltip_width}px`,
-    background: "white",
-    padding: "10px",
-    border: "1px solid black",
-    "z-index": 110,
-    "border-radius": "10px",
   });
 }
 
