@@ -67,6 +67,13 @@ $("html").css("border", "1px solid red");
 $("body").css({ border: "1px solid blue", padding: "10px" });
 // (끝)
 
+// body 태그 내에 vail, tooltip들 넣기
+$("body").append($vailUp);
+$("body").append($vailDown);
+$("body").append($vailLeft);
+$("body").append($vailRight);
+$("body").append($tooltip);
+
 // vail, tooltip 기본 style 설정
 const vails = [$vailUp, $vailDown, $vailLeft, $vailRight];
 const property_vail = {
@@ -91,15 +98,13 @@ $("#tooltip_title_container").css({
   "align-items": "center",
 });
 $("#tooltip_title").css({
+  display: "inline-block",
   "font-weight": 600,
 });
-
-// body 태그 내에 vail, tooltip들 넣기
-$("body").append($vailUp);
-$("body").append($vailDown);
-$("body").append($vailLeft);
-$("body").append($vailRight);
-$("body").append($tooltip);
+$("#tooltip_content").css({
+  "margin-top": "5px",
+  "margin-bottom": "15px",
+});
 
 // 하이라이트할 부분 설정
 let elem_index = 0;
