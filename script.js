@@ -6,8 +6,13 @@ let $button4 = $('<button id="button4">button4</button>');
 
 // 하이라이트할 요소들의 배열 (button 1, 2, 3, 4)
 let array_highlights = [$button1, $button2, $button3, $button4];
-// 툴팁이 보여줄 내용의 배열
-let array_tooltip_contents = ["11111", "22222222", "33333333", "4444444"];
+// 툴팁이 보여줄 제목 및 내용의 배열
+let array_tooltip_data = [
+  { title: "title1", content: "11111" },
+  { title: "title2", content: "2222222" },
+  { title: "title3", content: "333333" },
+  { title: "title4", content: "4444" },
+];
 
 // vail 생성
 let $vailUp = $('<div id="vail_up"></div>');
@@ -18,10 +23,15 @@ let $vailRight = $('<div id="vail_right"></div>');
 // tooltip 생성
 let $tooltip = $(
   `<div id="tooltip">
-    <button id="button_close_tooltip">X</button>
+    <div id="tooltip_title_container">
+      <div id="tooltip_title"></div>
+      <button id="button_close_tooltip">X</button>
+    </div>
     <p id="tooltip_content"></p>
-    <button id="button_prev">이전</button>
-    <button id="button_next">다음</button>
+    <div>
+      <button id="button_prev">이전</button>
+      <button id="button_next">다음</button>
+    </div>
   </div>`
 );
 
@@ -63,16 +73,25 @@ const property_vail = {
   display: "none",
   background: "rgba(0, 0, 0, 0.2)",
   position: "absolute",
-  "z-index": "100",
+  "z-index": 100,
 };
 for (const vail of vails) vail.css(property_vail);
 $tooltip.css({
   display: "none",
   background: "white",
   padding: "10px",
-  border: "1px solid black",
   "z-index": 110,
   "border-radius": "10px",
+  "box-shadow": "rgb(0 0 0 / 25%) 0px 0px 6px 2px",
+  "flex-direction": "column",
+});
+$("#tooltip_title_container").css({
+  display: "flex",
+  "justify-content": "space-between",
+  "align-items": "center",
+});
+$("#tooltip_title").css({
+  "font-weight": 600,
 });
 
 // body 태그 내에 vail, tooltip들 넣기
@@ -116,20 +135,20 @@ function locate_vails() {
   let offset = elem_highlight.offset();
 
   $vailUp.css({
-    top: "0",
-    left: "0",
+    top: 0,
+    left: 0,
     width: "100%",
     height: `${offset.top}`,
   });
   $vailDown.css({
     top: `${offset.top + elem_highlight.outerHeight(true)}px`,
-    left: "0",
+    left: 0,
     width: "100%",
     height: `calc(100% - ${offset.top + elem_highlight.outerHeight(true)}px)`,
   });
   $vailLeft.css({
     top: `${offset.top}px`,
-    left: "0",
+    left: 0,
     width: `${offset.left}px`,
     height: `${elem_highlight.outerHeight(true)}`,
   });
@@ -151,8 +170,9 @@ function locate_tooltip() {
   if (!elem_highlight) return;
   let offset = elem_highlight.offset();
 
-  // 내용을 n번째 내용으로 수정
-  $("#tooltip_content").text(array_tooltip_contents[elem_index]);
+  // 제목, 내용을 n번째 제목, 내용으로 수정
+  $("#tooltip_title").text(array_tooltip_data[elem_index].title);
+  $("#tooltip_content").text(array_tooltip_data[elem_index].content);
 
   // 위치를 highlight element에 맞게 수정
   const tooltip_width = 150;
@@ -170,7 +190,7 @@ function locate_tooltip() {
 
 // tooltip을 화면에 보이게 함
 function show_tooltip() {
-  $tooltip.css({ display: "block" });
+  $tooltip.css({ display: "flex" });
 }
 
 // vail, tooltip을 모두 화면에 보이지 않게 함
