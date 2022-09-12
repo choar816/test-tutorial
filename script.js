@@ -72,7 +72,6 @@ $("body").append($vailUp);
 $("body").append($vailDown);
 $("body").append($vailLeft);
 $("body").append($vailRight);
-$("body").append($tooltip);
 
 // vail, tooltip 기본 style 설정
 const vails = [$vailUp, $vailDown, $vailLeft, $vailRight];
